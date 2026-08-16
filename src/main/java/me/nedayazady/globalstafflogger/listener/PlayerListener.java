@@ -10,8 +10,8 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import me.nedayazady.globalstafflogger.config.ConfigManager;
 import me.nedayazady.globalstafflogger.manager.SpyManager;
+import me.nedayazady.globalstafflogger.utils.ColorUtils;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class PlayerListener {
                 .replace("{message}", message);
                 
         String prefix = configManager.getMessage("prefix");
-        Component parsedMessage = MiniMessage.miniMessage().deserialize(prefix + logMessage);
+        Component parsedMessage = ColorUtils.parse(prefix + logMessage);
 
         logger.info(configManager.getConsoleLogPrefix() + " [Chat] " + player.getUsername() + " (" + serverName + ") : " + message);
 
@@ -77,7 +77,7 @@ public class PlayerListener {
                 .replace("{command}", commandLine);
 
         String prefix = configManager.getMessage("prefix");
-        Component parsedMessage = MiniMessage.miniMessage().deserialize(prefix + logMessage);
+        Component parsedMessage = ColorUtils.parse(prefix + logMessage);
 
         logger.info(configManager.getConsoleLogPrefix() + " [Command] " + player.getUsername() + " (" + serverName + ") : /" + commandLine);
 
@@ -105,7 +105,7 @@ public class PlayerListener {
                 .replace("{new_server}", serverName);
 
         String prefix = configManager.getMessage("prefix");
-        Component parsedMessage = MiniMessage.miniMessage().deserialize(prefix + logMessage);
+        Component parsedMessage = ColorUtils.parse(prefix + logMessage);
         
         logger.info(configManager.getConsoleLogPrefix() + " [Switch] " + player.getUsername() + " switched from " + previousServerName + " to " + serverName);
 

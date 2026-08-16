@@ -4,8 +4,7 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
 import me.nedayazady.globalstafflogger.config.ConfigManager;
 import me.nedayazady.globalstafflogger.manager.SpyManager;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import me.nedayazady.globalstafflogger.utils.ColorUtils;
 
 public class SpyCommand implements SimpleCommand {
 
@@ -77,12 +76,12 @@ public class SpyCommand implements SimpleCommand {
 
     private void sendMessage(Invocation invocation, String message) {
         String prefix = configManager.getMessage("prefix");
-        invocation.source().sendMessage(MiniMessage.miniMessage().deserialize(prefix + message));
+        invocation.source().sendMessage(ColorUtils.parse(prefix + message));
     }
 
     private void sendMessage(Player player, String message) {
         String prefix = configManager.getMessage("prefix");
-        player.sendMessage(MiniMessage.miniMessage().deserialize(prefix + message));
+        player.sendMessage(ColorUtils.parse(prefix + message));
     }
     
     @Override

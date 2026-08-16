@@ -1,18 +1,19 @@
 # GlobalStaffLogger Messages Configuration
-# Use MiniMessage format for styling: https://docs.advntr.dev/minimessage/format.html
+# Use MiniMessage format (<red>, <bold>) OR Legacy format (&c, &l) OR Hex (&#RRGGBB):
+# For MiniMessage help see: https://docs.advntr.dev/minimessage/format.html
 
-prefix: "<gray>[<gold>Spy</gold>]</gray> "
+prefix: "&8[&6Spy&8] "
 
 # Spy command messages
-usage: "<red>Usage: /spy <chat|cmd|sw></red>"
-no-permission: "<red>You do not have permission to use this command.</red>"
-only-players: "<red>Only players can use this command.</red>"
+usage: "&cUsage: /spy <chat|cmd|sw>"
+no-permission: "&cYou do not have permission to use this command."
+only-players: "&cOnly players can use this command."
 
-spy-enabled: "<green>{type} spy is now enabled.</green>"
-spy-disabled: "<red>{type} spy is now disabled.</red>"
+spy-enabled: "&a{type} spy is now enabled."
+spy-disabled: "&c{type} spy is now disabled."
 
 # Spy format messages
 # Placeholders: {player}, {server}, {message}, {command}, {previous_server}, {new_server}
-chat-format: "<gray>{player} ({server}) : {message}</gray>"
-cmd-format: "<yellow>{player} ({server}) : /{command}</yellow>"
-switch-format: "<aqua>{player} switched from {previous_server} to {new_server}</aqua>"
+chat-format: "&7{player} ({server}) : {message}"
+cmd-format: "&e{player} ({server}) : /{command}"
+switch-format: "&b{player} switched from {previous_server} to {new_server}"
