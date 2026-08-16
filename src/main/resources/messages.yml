@@ -1,0 +1,18 @@
+# GlobalStaffLogger Messages Configuration
+# Use MiniMessage format for styling: https://docs.advntr.dev/minimessage/format.html
+
+prefix: "<gray>[<gold>Spy</gold>]</gray> "
+
+# Spy command messages
+usage: "<red>Usage: /spy <chat|cmd|sw></red>"
+no-permission: "<red>You do not have permission to use this command.</red>"
+only-players: "<red>Only players can use this command.</red>"
+
+spy-enabled: "<green>{type} spy is now enabled.</green>"
+spy-disabled: "<red>{type} spy is now disabled.</red>"
+
+# Spy format messages
+# Placeholders: {player}, {server}, {message}, {command}, {previous_server}, {new_server}
+chat-format: "<gray>{player} ({server}) : {message}</gray>"
+cmd-format: "<yellow>{player} ({server}) : /{command}</yellow>"
+switch-format: "<aqua>{player} switched from {previous_server} to {new_server}</aqua>"

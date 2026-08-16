@@ -8,21 +8,26 @@ import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
+import me.nedayazady.globalstafflogger.config.ConfigManager;
 import me.nedayazady.globalstafflogger.manager.SpyManager;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class PlayerListener {
 
     private final SpyManager spyManager;
     private final ProxyServer server;
-    private final Logger logger = LoggerFactory.getLogger(PlayerListener.class);
+    private final ConfigManager configManager;
+    private final Logger logger;
 
-    public PlayerListener(SpyManager spyManager, ProxyServer server) {
+    public PlayerListener(SpyManager spyManager, ProxyServer server, ConfigManager configManager, Logger logger) {
         this.spyManager = spyManager;
         this.server = server;
+        this.configManager = configManager;
+        this.logger = logger;
     }
 
     @Subscribe
@@ -31,13 +36,20 @@ public class PlayerListener {
         String message = event.getMessage();
         
         String serverName = player.getCurrentServer().map(ServerConnection::getServerInfo).map(info -> info.getName()).orElse("Unknown");
-        String logMessage = player.getUsername() + " (" + serverName + ") : " + message;
         
-        logger.info("[Chat] " + logMessage);
+        String logMessage = configManager.getMessage("chat-format")
+                .replace("{player}", player.getUsername())
+                .replace("{server}", serverName)
+                .replace("{message}", message);
+                
+        String prefix = configManager.getMessage("prefix");
+        Component parsedMessage = MiniMessage.miniMessage().deserialize(prefix + logMessage);
+
+        logger.info(configManager.getConsoleLogPrefix() + " [Chat] " + player.getUsername() + " (" + serverName + ") : " + message);
 
         for (Player p : server.getAllPlayers()) {
             if (p.hasPermission("nedayazady.spy.chat") && spyManager.isChatSpyEnabled(p.getUniqueId())) {
-                p.sendMessage(Component.text("[Spy] " + logMessage, NamedTextColor.GRAY));
+                p.sendMessage(parsedMessage);
             }
         }
     }
@@ -49,21 +61,29 @@ public class PlayerListener {
         }
 
         Player player = (Player) event.getCommandSource();
-        String command = event.getCommand();
+        String commandLine = event.getCommand();
+        String command = commandLine.split(" ")[0].toLowerCase();
         
-        // Exclude the spy command itself from being spied on to avoid spam
-        if (command.toLowerCase().startsWith("spy")) {
+        List<String> excluded = configManager.getExcludedCommands();
+        if (excluded.contains(command)) {
             return;
         }
 
         String serverName = player.getCurrentServer().map(ServerConnection::getServerInfo).map(info -> info.getName()).orElse("Unknown");
-        String logMessage = player.getUsername() + " (" + serverName + ") : /" + command;
         
-        logger.info("[Command] " + logMessage);
+        String logMessage = configManager.getMessage("cmd-format")
+                .replace("{player}", player.getUsername())
+                .replace("{server}", serverName)
+                .replace("{command}", commandLine);
+
+        String prefix = configManager.getMessage("prefix");
+        Component parsedMessage = MiniMessage.miniMessage().deserialize(prefix + logMessage);
+
+        logger.info(configManager.getConsoleLogPrefix() + " [Command] " + player.getUsername() + " (" + serverName + ") : /" + commandLine);
 
         for (Player p : server.getAllPlayers()) {
             if (p.hasPermission("nedayazady.spy.cmd") && spyManager.isCmdSpyEnabled(p.getUniqueId())) {
-                p.sendMessage(Component.text("[Spy] " + logMessage, NamedTextColor.YELLOW));
+                p.sendMessage(parsedMessage);
             }
         }
     }
@@ -73,19 +93,25 @@ public class PlayerListener {
         Player player = event.getPlayer();
         String serverName = event.getServer().getServerInfo().getName();
         
-        String previousServerName = event.getPreviousServer().map(server -> server.getServerInfo().getName()).orElse("None");
+        String previousServerName = event.getPreviousServer().map(serverConnection -> serverConnection.getServerInfo().getName()).orElse("None");
         
         if (previousServerName.equals("None")) {
             return; // Ignore initial connection
         }
         
-        String logMessage = player.getUsername() + " switched from " + previousServerName + " to " + serverName;
+        String logMessage = configManager.getMessage("switch-format")
+                .replace("{player}", player.getUsername())
+                .replace("{previous_server}", previousServerName)
+                .replace("{new_server}", serverName);
+
+        String prefix = configManager.getMessage("prefix");
+        Component parsedMessage = MiniMessage.miniMessage().deserialize(prefix + logMessage);
         
-        logger.info("[Switch] " + logMessage);
+        logger.info(configManager.getConsoleLogPrefix() + " [Switch] " + player.getUsername() + " switched from " + previousServerName + " to " + serverName);
 
         for (Player p : server.getAllPlayers()) {
             if (p.hasPermission("nedayazady.spy.sw") && spyManager.isSwitchSpyEnabled(p.getUniqueId())) {
-                p.sendMessage(Component.text("[Spy] " + logMessage, NamedTextColor.AQUA));
+                p.sendMessage(parsedMessage);
             }
         }
     }

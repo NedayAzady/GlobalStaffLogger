@@ -2,22 +2,25 @@ package me.nedayazady.globalstafflogger.command;
 
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
+import me.nedayazady.globalstafflogger.config.ConfigManager;
 import me.nedayazady.globalstafflogger.manager.SpyManager;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public class SpyCommand implements SimpleCommand {
 
     private final SpyManager spyManager;
+    private final ConfigManager configManager;
 
-    public SpyCommand(SpyManager spyManager) {
+    public SpyCommand(SpyManager spyManager, ConfigManager configManager) {
         this.spyManager = spyManager;
+        this.configManager = configManager;
     }
 
     @Override
     public void execute(Invocation invocation) {
         if (!(invocation.source() instanceof Player)) {
-            invocation.source().sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            sendMessage(invocation, configManager.getMessage("only-players"));
             return;
         }
 
@@ -25,44 +28,61 @@ public class SpyCommand implements SimpleCommand {
         String[] args = invocation.arguments();
 
         if (args.length == 0) {
-            player.sendMessage(Component.text("Usage: /spy <chat|cmd|sw>", NamedTextColor.RED));
+            sendMessage(player, configManager.getMessage("usage"));
             return;
         }
 
         String type = args[0].toLowerCase();
+        boolean enabled = false;
 
         switch (type) {
             case "chat":
                 if (player.hasPermission("nedayazady.spy.chat")) {
                     spyManager.toggleChatSpy(player.getUniqueId());
-                    boolean enabled = spyManager.isChatSpyEnabled(player.getUniqueId());
-                    player.sendMessage(Component.text("Chat spy is now " + (enabled ? "enabled" : "disabled") + ".", enabled ? NamedTextColor.GREEN : NamedTextColor.RED));
+                    enabled = spyManager.isChatSpyEnabled(player.getUniqueId());
+                    sendStatusMessage(player, "Chat", enabled);
                 } else {
-                    player.sendMessage(Component.text("You do not have permission to use chat spy.", NamedTextColor.RED));
+                    sendMessage(player, configManager.getMessage("no-permission"));
                 }
                 break;
             case "cmd":
                 if (player.hasPermission("nedayazady.spy.cmd")) {
                     spyManager.toggleCmdSpy(player.getUniqueId());
-                    boolean enabled = spyManager.isCmdSpyEnabled(player.getUniqueId());
-                    player.sendMessage(Component.text("Command spy is now " + (enabled ? "enabled" : "disabled") + ".", enabled ? NamedTextColor.GREEN : NamedTextColor.RED));
+                    enabled = spyManager.isCmdSpyEnabled(player.getUniqueId());
+                    sendStatusMessage(player, "Command", enabled);
                 } else {
-                    player.sendMessage(Component.text("You do not have permission to use command spy.", NamedTextColor.RED));
+                    sendMessage(player, configManager.getMessage("no-permission"));
                 }
                 break;
             case "sw":
                 if (player.hasPermission("nedayazady.spy.sw")) {
                     spyManager.toggleSwitchSpy(player.getUniqueId());
-                    boolean enabled = spyManager.isSwitchSpyEnabled(player.getUniqueId());
-                    player.sendMessage(Component.text("Switch spy is now " + (enabled ? "enabled" : "disabled") + ".", enabled ? NamedTextColor.GREEN : NamedTextColor.RED));
+                    enabled = spyManager.isSwitchSpyEnabled(player.getUniqueId());
+                    sendStatusMessage(player, "Switch", enabled);
                 } else {
-                    player.sendMessage(Component.text("You do not have permission to use switch spy.", NamedTextColor.RED));
+                    sendMessage(player, configManager.getMessage("no-permission"));
                 }
                 break;
             default:
-                player.sendMessage(Component.text("Usage: /spy <chat|cmd|sw>", NamedTextColor.RED));
+                sendMessage(player, configManager.getMessage("usage"));
                 break;
         }
+    }
+
+    private void sendStatusMessage(Player player, String type, boolean enabled) {
+        String messageKey = enabled ? "spy-enabled" : "spy-disabled";
+        String rawMessage = configManager.getMessage(messageKey).replace("{type}", type);
+        sendMessage(player, rawMessage);
+    }
+
+    private void sendMessage(Invocation invocation, String message) {
+        String prefix = configManager.getMessage("prefix");
+        invocation.source().sendMessage(MiniMessage.miniMessage().deserialize(prefix + message));
+    }
+
+    private void sendMessage(Player player, String message) {
+        String prefix = configManager.getMessage("prefix");
+        player.sendMessage(MiniMessage.miniMessage().deserialize(prefix + message));
     }
     
     @Override

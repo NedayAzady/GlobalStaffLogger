@@ -1,0 +1,10 @@
+# GlobalStaffLogger Configuration
+
+# Exclude certain commands from being logged in cmd spy (e.g., login, register)
+excluded-commands:
+  - "login"
+  - "register"
+  - "spy"
+
+# Log prefix used in console logs
+console-log-prefix: "[GlobalStaffLogger]"
