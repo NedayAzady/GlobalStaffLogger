@@ -7,17 +7,17 @@ Global Staff Logger is a high-performance logging plugin developed specifically 
 ### 1. Command Logging
 Log every command entered by a player across all linked servers, including commands that do not exist on the backend server.
 - **Log Format:** `{player} ({server}) : {command}`
-- **Example:** `TheRiox (Lobby) : /plugins`
+- **Example:** `Azady (Lobby) : /plugins`
 
 ### 2. Global Chat Logging
 Log all chat messages sent by players in any server within the network.
 - **Log Format:** `{player} ({server}) : {message}`
-- **Example:** `TheRiox (Practice) : Hello`
+- **Example:** `Azady (Practice) : Hello`
 
 ### 3. Connection & Movement Logging
 Log when a player switches between servers (via command, portal, or plugin) or when they are kicked/moved.
 - **Log Format:** `{player} switched from {server} to {server}`
-- **Example:** `TheRiox switched from Lobby to Practice`
+- **Example:** `Azady switched from Lobby to Practice`
 
 ### 4. Toggleable Spy Mode
 Staff members can toggle Spy mode to monitor live activity in real-time across the network.
